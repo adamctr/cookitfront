@@ -1,17 +1,42 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "baseUrl": ".",
     "strict": true,
+    "jsx": "react-native",
     "paths": {
-      "@/*": [
-        "./*"
+      "@components/*": [
+        "./components/*"
+      ],
+      "@context/*": [
+        "./context/*"
+      ],
+      "@assets/*": [
+        "./assets/*"
+      ],
+      "@types/*": [
+        "interfaces/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@constants/*": [
+        "./constants/*"
+      ],
+      "@app/*": [
+        "./app/*"
       ]
-    }
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "interfaces"
+    ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "interfaces/**/*.ts",
+    "expo-env.d.ts",
+    ".expo/types/**/*.ts"
   ]
 }
