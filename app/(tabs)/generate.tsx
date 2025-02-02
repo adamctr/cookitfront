@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 interface Recipe {
+  id: string;
   recipeName: string;
   totalTime: string;
   cookingTime: string;
@@ -20,93 +22,35 @@ interface Recipe {
 
 const MOCK_RECIPES: Recipe[] = [
     {
+      id: "1", // Ajoute cet identifiant unique
       recipeName: "Pâtes Carbonara",
       totalTime: "30 min",
       cookingTime: "15 min",
       steps: [
-        {
-          stepNumber: 1,
-          time: "5 min",
-          description: "Faire chauffer l'eau pour les pâtes"
-        },
-        {
-          stepNumber: 2,
-          time: "10 min",
-          description: "Cuire les lardons et préparer la sauce"
-        }
+        { stepNumber: 1, time: "5 min", description: "Faire chauffer l'eau pour les pâtes" },
+        { stepNumber: 2, time: "10 min", description: "Cuire les lardons et préparer la sauce" },
       ],
       ingredients: [
-        {
-          ingredient: "Pâtes",
-          quantity: "300",
-          unit: "g"
-        },
-        {
-          ingredient: "Lardons",
-          quantity: "200",
-          unit: "g"
-        }
-      ]
+        { ingredient: "Pâtes", quantity: "300", unit: "g" },
+        { ingredient: "Lardons", quantity: "200", unit: "g" },
+      ],
     },
     {
+      id: "2",
       recipeName: "Salade César",
       totalTime: "20 min",
       cookingTime: "0 min",
       steps: [
-        {
-          stepNumber: 1,
-          time: "10 min",
-          description: "Laver et préparer la laitue"
-        },
-        {
-          stepNumber: 2,
-          time: "5 min",
-          description: "Préparer la sauce et les croûtons"
-        }
+        { stepNumber: 1, time: "10 min", description: "Laver et préparer la laitue" },
+        { stepNumber: 2, time: "5 min", description: "Préparer la sauce et les croûtons" },
       ],
       ingredients: [
-        {
-          ingredient: "Laitue",
-          quantity: "1",
-          unit: "unité"
-        },
-        {
-          ingredient: "Croûtons",
-          quantity: "100",
-          unit: "g"
-        }
-      ]
+        { ingredient: "Laitue", quantity: "1", unit: "unité" },
+        { ingredient: "Croûtons", quantity: "100", unit: "g" },
+      ],
     },
-    {
-      recipeName: "Tarte aux Pommes",
-      totalTime: "60 min",
-      cookingTime: "40 min",
-      steps: [
-        {
-          stepNumber: 1,
-          time: "20 min",
-          description: "Préparer la pâte et éplucher les pommes"
-        },
-        {
-          stepNumber: 2,
-          time: "40 min",
-          description: "Cuire la tarte au four"
-        }
-      ],
-      ingredients: [
-        {
-          ingredient: "Pommes",
-          quantity: "4",
-          unit: "unité"
-        },
-        {
-          ingredient: "Pâte brisée",
-          quantity: "1",
-          unit: "unité"
-        }
-      ]
-    }
   ];
+  
 
 const GenerateScreen = () => {
   const [ingredients, setIngredients] = useState('');
@@ -114,6 +58,7 @@ const GenerateScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigation = useNavigation();
+  const router = useRouter();
 
   const handleGenerateRecipes = async () => {
     if (!ingredients.trim()) {
@@ -136,18 +81,21 @@ const GenerateScreen = () => {
     }
   };
 
-  const renderRecipeItem = ({ item }: { item: Recipe }) => (
-    <TouchableOpacity 
-      style={styles.recipeCard}
-      onPress={() => navigation.navigate('RecipeDetail', { recipe: item })}
-    >
-      <Text style={styles.recipeTitle}>{item.recipeName}</Text>
-      <Text style={styles.recipeTime}>⏱ {item.totalTime}</Text>
-      <Text style={styles.ingredients}>
-        {item.ingredients.map(ing => ing.ingredient).join(', ')}
-      </Text>
-    </TouchableOpacity>
-  );
+const renderRecipeItem = ({ item }: { item: Recipe }) => (
+  <TouchableOpacity 
+    style={styles.recipeCard}
+    onPress={() => router.push({
+      pathname: "/modal/recipe-detail",
+      params: { recipe: JSON.stringify(item) },
+    })}
+  >
+    <Text style={styles.recipeTitle}>{item.recipeName}</Text>
+    <Text style={styles.recipeTime}>⏱ {item.totalTime}</Text>
+    <Text style={styles.ingredients}>
+      {item.ingredients.map(ing => ing.ingredient).join(', ')}
+    </Text>
+  </TouchableOpacity>
+);
 
   return (
     <View style={styles.container}>
