@@ -6,17 +6,24 @@ import { useEffect } from 'react';
 export default function RecipeDetailModal() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { recipe, origin } = useLocalSearchParams(); // On récupère aussi le paramètre "origin"
-  const parsedRecipe = recipe ? JSON.parse(recipe as string) : null;
-  
-  // Configurer les options de geste
+  const { recipe, origin } = useLocalSearchParams(); // Récupération des paramètres
+
+  // Vérification et parsing des données reçues
+  let parsedRecipe = null;
+  try {
+    parsedRecipe = recipe ? JSON.parse(decodeURIComponent(recipe as string)) : null;
+  } catch (error) {
+    console.error("Erreur lors du parsing de la recette :", error);
+  }
+
+  // Configurer les options de geste pour la modale
   useEffect(() => {
     navigation.setOptions({
       gestureEnabled: true,
       gestureDirection: 'vertical',
     });
   }, [navigation]);
-  
+
   if (!parsedRecipe) {
     return (
       <View style={styles.modalContainer}>
@@ -24,9 +31,9 @@ export default function RecipeDetailModal() {
       </View>
     );
   }
-  
+
   const handleClose = () => {
-    // Si le paramètre origin est défini, on redirige vers cette page.
+
     if (origin) {
       router.replace(`/(tabs)/${origin}`);
     } else if (router.canGoBack()) {
@@ -49,7 +56,7 @@ export default function RecipeDetailModal() {
       <ScrollView contentContainerStyle={styles.modalContent}>
         <Text style={styles.title}>{parsedRecipe.recipeName}</Text>
         <Text style={styles.time}>⏱ {parsedRecipe.totalTime}</Text>
-        
+
         <Text style={styles.sectionTitle}>Ingrédients :</Text>
         {parsedRecipe.ingredients.map((ing, index) => (
           <Text key={index} style={styles.ingredientItem}>

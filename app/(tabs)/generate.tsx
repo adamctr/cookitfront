@@ -69,13 +69,7 @@ const GenerateScreen = () => {
   const renderRecipeItem = ({ item }: { item: Recipe }) => (
     <TouchableOpacity 
       style={styles.recipeCard}
-      onPress={() => router.navigate({
-        pathname: "/modal/recipe-detail",
-        params: { 
-          recipe: JSON.stringify(item),
-          origin: "favorites"
-        },
-      })}
+      onPress={() => router.navigate(`/recipe-detail?recipe=${encodeURIComponent(JSON.stringify(item))}&origin=generate`)}
     >
       <Text style={styles.recipeTitle}>{item.recipeName}</Text>
       <Text style={styles.recipeTime}>⏱ {item.totalTime}</Text>

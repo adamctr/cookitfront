@@ -94,13 +94,7 @@ export default function FavoritesScreen() {
   const renderRecipeItem = ({ item }: { item: Recipe }) => (
     <TouchableOpacity 
       style={styles.recipeCard}
-      onPress={() => router.push({
-        pathname: "/modal/recipe-detail",
-        params: { 
-          recipe: JSON.stringify(item),
-          origin: "favorites"
-        },
-      })}
+      onPress={() => router.navigate(`/recipe-detail?recipe=${encodeURIComponent(JSON.stringify(item))}&origin=favorites`)}
     >
       <Text style={styles.recipeTitle}>{item.recipeName}</Text>
       <Text style={styles.recipeTime}>⏱ {item.totalTime}</Text>
