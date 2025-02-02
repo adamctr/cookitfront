@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@constants/Color';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
+
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide').min(1, 'Email requis'),
@@ -36,14 +38,18 @@ export default function LoginScreen() {
   const handleLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await login('fake-auth-token');
+      const response = await axios.post('http://localhost:8080/api/login', { 
+        email: data.email,
+        password: data.password
+      });
+      await login(response.data.token);
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion. Veuillez réessayer.');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>

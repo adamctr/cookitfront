@@ -1,35 +1,51 @@
 // context/AuthProvider.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-// Importez SecureStore uniquement si vous en avez besoin
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AuthContextType, AuthProviderProps } from 'interfaces/auth';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
+// Méthodes de stockage universelles
+const storage = {
+  setItem: async (key: string, value: string) => {
+    if (Platform.OS === 'web') {
+      await AsyncStorage.setItem(key, value);
+    } else {
+      await SecureStore.setItemAsync(key, value);
+    }
+  },
+  getItem: async (key: string) => {
+    return Platform.OS === 'web' 
+      ? await AsyncStorage.getItem(key) 
+      : await SecureStore.getItemAsync(key);
+  },
+  deleteItem: async (key: string) => {
+    if (Platform.OS === 'web') {
+      await AsyncStorage.removeItem(key);
+    } else {
+      await SecureStore.deleteItemAsync(key);
+    }
+  }
+};
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [authState, setAuthState] = useState<{
-    isLoading: boolean;
-    isAuthenticated: boolean;
-  }>({
+  const [authState, setAuthState] = useState({
     isLoading: true,
     isAuthenticated: false,
   });
 
-  // Fonction de vérification du token au démarrage
   const checkAuthToken = useCallback(async () => {
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
-      console.log('Token récupéré:', token);
+      const token = await storage.getItem('auth_token');
       setAuthState({
         isLoading: false,
         isAuthenticated: !!token,
       });
     } catch (error) {
-      console.error('Erreur dans checkAuthToken:', error);
-      setAuthState(prev => ({
-        ...prev,
-        isLoading: false,
-      }));
+      console.error('Erreur de vérification du token:', error);
+      setAuthState(prev => ({ ...prev, isLoading: false }));
     }
   }, []);
 
@@ -37,35 +53,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthToken();
   }, [checkAuthToken]);
 
-  // Pour le test, retirez ou commentez l'utilisation de SecureStore
   const login = async (token: string) => {
-    console.log('login appelé avec token:', token);
-    // Test sans SecureStore : mettez directement à jour l'état
-    // await SecureStore.setItemAsync('auth_token', token);
-    setAuthState({
-      isLoading: false,
-      isAuthenticated: true,
-    });
-    console.log('isAuthenticated mis à true');
+    try {
+      await storage.setItem('auth_token', token);
+      setAuthState({
+        isLoading: false,
+        isAuthenticated: true,
+      });
+    } catch (error) {
+      console.error('Erreur lors de la connexion:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    // await SecureStore.deleteItemAsync('auth_token');
-    setAuthState({
-      isLoading: false,
-      isAuthenticated: false,
-    });
-    console.log('logout appelé, isAuthenticated mis à false');
+    try {
+      await storage.deleteItem('auth_token');
+      setAuthState({
+        isLoading: false,
+        isAuthenticated: false,
+      });
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        ...authState,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ ...authState, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
