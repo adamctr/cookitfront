@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { useRecipes } from '@context/RecipesContext';
 
 const GenerateScreen = () => {
-  const [ingredients, setIngredients] = useState('');
+  const [ingredients, setIngredients] = useState(''); // Zone de texte
   const [loading, setLoading] = useState(false);
   const { addRecipe, recipes } = useRecipes();  // Récupérer les recettes du contexte
   const [error, setError] = useState('');
