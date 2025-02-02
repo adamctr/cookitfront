@@ -96,7 +96,10 @@ export default function FavoritesScreen() {
       style={styles.recipeCard}
       onPress={() => router.push({
         pathname: "/modal/recipe-detail",
-        params: { recipe: JSON.stringify(item) },
+        params: { 
+          recipe: JSON.stringify(item),
+          origin: "favorites"
+        },
       })}
     >
       <Text style={styles.recipeTitle}>{item.recipeName}</Text>

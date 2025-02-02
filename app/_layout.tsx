@@ -2,6 +2,7 @@
 import { Slot, useRouter } from 'expo-router';
 import { AuthProvider, useAuth } from '@context/AuthProvider';
 import { ActivityIndicator, View } from 'react-native';
+import { RecipesProvider } from '@context/RecipesContext';
 
 function Routing() {
 
@@ -31,7 +32,9 @@ function Routing() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <Routing />
+      <RecipesProvider>
+        <Routing />
+      </RecipesProvider>
     </AuthProvider>
   );
 }

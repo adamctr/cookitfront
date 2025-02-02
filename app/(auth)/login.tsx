@@ -10,7 +10,6 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@constants/Color';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Schéma de validation avec Zod
 const loginSchema = z.object({
   email: z.string().email('Email invalide').min(1, 'Email requis'),
   password: z.string().min(8, 'Minimum 8 caractères')
@@ -28,9 +27,7 @@ export default function LoginScreen() {
     resolver: zodResolver(loginSchema)
   });
 
-  // Surveillez l'état d'authentification et redirigez dès qu'il est vrai
   useEffect(() => {
-    console.log('isAuthenticated:', isAuthenticated);
     if (isAuthenticated) {
       router.replace('/(tabs)/generate');
     }
@@ -39,11 +36,8 @@ export default function LoginScreen() {
   const handleLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      // Simulation d'une requête API avec un délai de 1,5 seconde
       await new Promise(resolve => setTimeout(resolve, 1500));
-      // Vous pouvez ajouter ici une vérification simple des identifiants si besoin
       await login('fake-auth-token');
-      // La redirection se fait via le useEffect lorsque isAuthenticated devient true
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion. Veuillez réessayer.');
     } finally {
@@ -134,22 +128,6 @@ export default function LoginScreen() {
 
       <View style={styles.separatorContainer}>
         <View style={styles.separatorLine} />
-        <Text style={styles.separatorText}>Ou continuer avec</Text>
-        <View style={styles.separatorLine} />
-      </View>
-
-      <View style={styles.socialButtonsContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <Ionicons name="logo-google" size={24} color={Colors.primary} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Ionicons name="logo-apple" size={24} color={Colors.primary} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.socialButton}>
-          <Ionicons name="logo-facebook" size={24} color={Colors.primary} />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.footer}>
@@ -233,21 +211,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 1,
     backgroundColor: Colors.border
-  },
-  separatorText: {
-    color: Colors.gray,
-    fontSize: 14
-  },
-  socialButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20
-  },
-  socialButton: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: 15,
-    borderRadius: 10
   },
   footer: {
     flexDirection: 'row',

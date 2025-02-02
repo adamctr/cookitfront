@@ -1,12 +1,22 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect } from 'react';
 
 export default function RecipeDetailModal() {
   const router = useRouter();
-  const { recipe } = useLocalSearchParams();
+  const navigation = useNavigation();
+  const { recipe, origin } = useLocalSearchParams(); // On récupère aussi le paramètre "origin"
   const parsedRecipe = recipe ? JSON.parse(recipe as string) : null;
-
+  
+  // Configurer les options de geste
+  useEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: true,
+      gestureDirection: 'vertical',
+    });
+  }, [navigation]);
+  
   if (!parsedRecipe) {
     return (
       <View style={styles.modalContainer}>
@@ -14,12 +24,23 @@ export default function RecipeDetailModal() {
       </View>
     );
   }
+  
+  const handleClose = () => {
+    // Si le paramètre origin est défini, on redirige vers cette page.
+    if (origin) {
+      router.replace(`/(tabs)/${origin}`);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/favorites'); // Fallback sécurisé
+    }
+  };
 
   return (
     <View style={styles.modalContainer}>
       {/* Bouton de fermeture */}
       <View style={styles.modalHeader}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
+        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <Ionicons name="close" size={24} color="#666" />
         </TouchableOpacity>
         <View style={styles.handleIndicator} />
@@ -53,7 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    marginTop: 40,
+    marginTop: 16,
     overflow: 'hidden',
   },
   modalHeader: {
@@ -101,5 +122,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     marginBottom: 5,
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
