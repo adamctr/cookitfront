@@ -5,6 +5,12 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AuthContextType, AuthProviderProps } from 'interfaces/auth';
 
+// Typage du JWT pour extraire id_user
+interface JwtPayload {
+  id_user: string;
+  exp: number;
+}
+
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 // Méthodes de stockage universelles
@@ -34,15 +40,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authState, setAuthState] = useState({
     isLoading: true,
     isAuthenticated: false,
+    userId: null as string | null,  // Ajout de userId dans l'état
   });
 
   const checkAuthToken = useCallback(async () => {
     try {
       const token = await storage.getItem('auth_token');
-      setAuthState({
-        isLoading: false,
-        isAuthenticated: !!token,
-      });
+      if (token) {
+const jwt_decode = require('jwt-decode');
+        setAuthState({
+          isLoading: false,
+          isAuthenticated: true,
+          userId: jwt_decode.id_user,  // Stocke l'id_user
+        });
+      } else {
+        setAuthState({
+          isLoading: false,
+          isAuthenticated: false,
+          userId: null,
+        });
+      }
     } catch (error) {
       console.error('Erreur de vérification du token:', error);
       setAuthState(prev => ({ ...prev, isLoading: false }));
@@ -56,9 +73,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (token: string) => {
     try {
       await storage.setItem('auth_token', token);
+      var jwt = require('jsonwebtoken');
+      var decoded = jwt.verify(token, 'shhhhh');
+
+      
+
+      // const decoded = jwt_decode<JwtPayload>(token);  // Décodage lors de la connexion
       setAuthState({
         isLoading: false,
         isAuthenticated: true,
+        userId: decoded.id_user,  // Stocke l'id_user
       });
     } catch (error) {
       console.error('Erreur lors de la connexion:', error);
@@ -72,6 +96,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setAuthState({
         isLoading: false,
         isAuthenticated: false,
+        userId: null,
       });
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);

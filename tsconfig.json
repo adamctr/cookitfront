@@ -4,28 +4,17 @@
     "baseUrl": ".",
     "strict": true,
     "jsx": "react-native",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
-      "@components/*": [
-        "./components/*"
-      ],
-      "@context/*": [
-        "./context/*"
-      ],
-      "@assets/*": [
-        "./assets/*"
-      ],
-      "@types/*": [
-        "interfaces/*"
-      ],
-      "@utils/*": [
-        "./utils/*"
-      ],
-      "@constants/*": [
-        "./constants/*"
-      ],
-      "@app/*": [
-        "./app/*"
-      ]
+      "@components/*": ["./components/*"],
+      "@context/*": ["./context/*"],
+      "@assets/*": ["./assets/*"],
+      "@types/*": ["interfaces/*"],
+      "@utils/*": ["./utils/*"],
+      "@constants/*": ["./constants/*"],
+      "@app/*": ["./app/*"],
+      "@jwtDecode": ["./node_modules/jwt-decode"]  // Alias correct pour jwt-decode
     },
     "typeRoots": [
       "./node_modules/@types",
