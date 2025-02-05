@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@constants/Color';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
+
 
 // Schéma de validation avec Zod
 const registerSchema = z.object({
@@ -42,9 +44,12 @@ export default function RegisterScreen() {
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Ici vous ajouteriez l'appel à votre API d'inscription
-      await login('fake-auth-token'); // Simulation de connexion automatique après inscription
+      const response = await axios.post('http://localhost:8080/api/register', { 
+        email: data.email,
+        password: data.password
+      });
+        // Ici vous ajouteriez l'appel à votre API d'inscription
+      await login(response.data.token); // Simulation de connexion automatique après inscription
     } catch (error) {
       Alert.alert('Erreur', "Échec de l'inscription. Veuillez réessayer.");
     } finally {

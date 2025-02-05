@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AuthContextType, AuthProviderProps } from 'interfaces/auth';
+import axios from 'axios';
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -68,15 +69,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      await storage.deleteItem('auth_token');
+      await storage.deleteItem('auth_token');  // Supprimer le token localement
       setAuthState({
         isLoading: false,
         isAuthenticated: false,
       });
+      console.log('Déconnexion réussie');
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     }
   };
+  
 
   return (
     <AuthContext.Provider value={{ ...authState, login, logout }}>
