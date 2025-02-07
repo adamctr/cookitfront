@@ -53,7 +53,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="historique"
           options={{
-            title: "Historique",
+            title: "Historique", // Titre fixe pour cet onglet
             tabBarIcon: ({ color }) => (
               <Ionicons name="hourglass" size={24} color={color} />
             ),

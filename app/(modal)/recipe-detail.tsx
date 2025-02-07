@@ -1,7 +1,13 @@
-import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useEffect } from 'react';
+import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect } from "react";
 
 export default function RecipeDetailModal() {
   const router = useRouter();
@@ -11,7 +17,9 @@ export default function RecipeDetailModal() {
   // Vérification et parsing des données reçues
   let parsedRecipe = null;
   try {
-    parsedRecipe = recipe ? JSON.parse(decodeURIComponent(recipe as string)) : null;
+    parsedRecipe = recipe
+      ? JSON.parse(decodeURIComponent(recipe as string))
+      : null;
   } catch (error) {
     console.error("Erreur lors du parsing de la recette :", error);
   }
@@ -20,7 +28,7 @@ export default function RecipeDetailModal() {
   useEffect(() => {
     navigation.setOptions({
       gestureEnabled: true,
-      gestureDirection: 'vertical',
+      gestureDirection: "vertical",
     });
   }, [navigation]);
 
@@ -33,13 +41,10 @@ export default function RecipeDetailModal() {
   }
 
   const handleClose = () => {
-
     if (origin) {
       router.replace(`/(tabs)/${origin}`);
-    } else if (router.canGoBack()) {
-      router.back();
     } else {
-      router.replace('/(tabs)/favorites'); // Fallback sécurisé
+      router.back();
     }
   };
 
@@ -54,20 +59,22 @@ export default function RecipeDetailModal() {
       </View>
 
       <ScrollView contentContainerStyle={styles.modalContent}>
-        <Text style={styles.title}>{parsedRecipe.recipeName}</Text>
-        <Text style={styles.time}>⏱ {parsedRecipe.totalTime}</Text>
+        <Text style={styles.title}>{parsedRecipe.title}</Text>
+        <Text style={styles.time}>
+          ⏱ Temps total : {parsedRecipe.total_time} minutes
+        </Text>
 
         <Text style={styles.sectionTitle}>Ingrédients :</Text>
         {parsedRecipe.ingredients.map((ing, index) => (
           <Text key={index} style={styles.ingredientItem}>
-            • {ing.quantity} {ing.unit} {ing.ingredient}
+            • {ing.quantity} {ing.unit} {ing.name}
           </Text>
         ))}
 
         <Text style={styles.sectionTitle}>Étapes :</Text>
         {parsedRecipe.steps.map((step, index) => (
           <Text key={index} style={styles.stepItem}>
-            {step.stepNumber}. {step.description} ({step.time})
+            {step.number}. {step.description} ({step.time} min)
           </Text>
         ))}
       </ScrollView>
@@ -78,11 +85,11 @@ export default function RecipeDetailModal() {
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     marginTop: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   modalHeader: {
     paddingHorizontal: 20,
@@ -90,16 +97,16 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   closeButton: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     padding: 8,
   },
   handleIndicator: {
     width: 40,
     height: 5,
-    backgroundColor: '#DDD',
+    backgroundColor: "#DDD",
     borderRadius: 3,
-    alignSelf: 'center',
-    position: 'absolute',
+    alignSelf: "center",
+    position: "absolute",
     top: 20,
   },
   modalContent: {
@@ -108,17 +115,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
   },
   time: {
     fontSize: 16,
-    color: '#F56A009F',
+    color: "#F56A009F",
     marginBottom: 15,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 15,
   },
   ingredientItem: {
@@ -132,8 +139,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: 'red',
-    textAlign: 'center',
+    color: "red",
+    textAlign: "center",
     marginTop: 20,
   },
 });
