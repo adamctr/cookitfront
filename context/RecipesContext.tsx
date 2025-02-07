@@ -1,6 +1,6 @@
 // context/RecipesContext.tsx
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 interface Recipe {
   id: string;
@@ -30,7 +30,7 @@ const RecipesContext = createContext<RecipesContextType | undefined>(undefined);
 export const useRecipes = () => {
   const context = useContext(RecipesContext);
   if (!context) {
-    throw new Error('useRecipes must be used within a RecipesProvider');
+    throw new Error("useRecipes must be used within a RecipesProvider");
   }
   return context;
 };
@@ -39,7 +39,7 @@ export const RecipesProvider: React.FC = ({ children }) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   const addRecipe = (recipe: Recipe) => {
-    setRecipes((prevRecipes) => [...prevRecipes, recipe]);
+    setRecipes((prevRecipes) => [recipe, ...prevRecipes]);
   };
 
   const clearRecipes = () => {

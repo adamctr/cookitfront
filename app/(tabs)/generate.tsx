@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useRecipes } from "@context/RecipesContext";
-import { useAuth } from "@context/AuthProvider";
 import axios from "axios";
 
 const GenerateScreen = () => {
@@ -20,7 +19,6 @@ const GenerateScreen = () => {
   const { addRecipe, recipes } = useRecipes(); // Récupérer les recettes du contexte
   const [error, setError] = useState("");
   const router = useRouter();
-  const { userId } = useAuth();
 
   const handleGenerateRecipes = async () => {
     if (!ingredients.trim()) {
@@ -33,32 +31,33 @@ const GenerateScreen = () => {
       setError("");
 
       const response = await axios.post(
-        "http://localhost:8080/chatgpt/recette",
+        "http://localhost:8080/api/chatgpt/recette", // Assurez-vous que cette URL soit correcte
         {
           ingredients: ingredients,
-          id_user: userId,
-          nombre_recettes: 4,
+          num_recipes: 2, // Vous pouvez adapter ce paramètre selon votre besoin
         },
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("auth_token")}`, // Ajout du token d'authentification
           },
+          withCredentials: true,
         }
       );
 
       if (response.data && Array.isArray(response.data)) {
-        response.data.forEach((recipe) => addRecipe(recipe));
+        response.data.forEach((recipe) => addRecipe(recipe)); // Ajout des recettes dans le contexte
       } else {
         setError("Réponse invalide du serveur");
       }
     } catch (err) {
-      setError(`Erreur lors de la génération des recettes ${err}`);
+      setError(`Erreur lors de la génération des recettes: ${err}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderRecipeItem = ({ item }: { item: Recipe }) => (
+  const renderRecipeItem = ({ item }) => (
     <TouchableOpacity
       style={styles.recipeCard}
       onPress={() =>
@@ -69,10 +68,13 @@ const GenerateScreen = () => {
         )
       }
     >
-      <Text style={styles.recipeTitle}>{item.recipeName}</Text>
-      <Text style={styles.recipeTime}>⏱ {item.totalTime}</Text>
+      <Text style={styles.recipeTitle}>{item.title}</Text>{" "}
+      {/* Modifié de 'recipeName' à 'title' */}
+      <Text style={styles.recipeTime}>⏱ {item.total_time}</Text>{" "}
+      {/* Assurez-vous que ce champ existe */}
       <Text style={styles.ingredients}>
-        {item.ingredients.map((ing) => ing.ingredient).join(", ")}
+        {item.ingredients.map((ing) => ing.name).join(", ")}{" "}
+        {/* Modifié de 'ingredient' à 'name' */}
       </Text>
     </TouchableOpacity>
   );
