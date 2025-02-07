@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator }
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
+import { useAuth } from "@context/AuthProvider";
 
 interface Recipe {
   id: string;
@@ -18,44 +19,20 @@ interface Recipe {
 
 // 🔹 États globaux pour stocker `id_user` et les favoris
 export default function FavoritesScreen() {
-  const [userId, setUserId] = useState<string | null>(null);
   const [sorting, setSorting] = useState("name");
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
-  // 📌 Récupérer `id_user` avant d'appeler `fetchFavoris()`
-  const fetchUserId = async () => {
-    try {
-      console.log("🔍 Récupération de l'ID utilisateur...");
-      const response = await axios.get('http://localhost:8080/api/user', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem(response.data.token)}`
-        }
-      });
-
-      console.log("✅ Utilisateur récupéré :", response.data);
-      if (response.data.id) {
-        setUserId(response.data.id.toString());
-        fetchFavoris(response.data.id.toString()); // Appelle `fetchFavoris()` avec `id_user`
-      } else {
-        setError("Utilisateur non authentifié");
-      }
-    } catch (err) {
-      console.error("❌ Erreur lors de la récupération de l'utilisateur :", err);
-      setError("Impossible de récupérer l'utilisateur.");
-    }
-  };
 
   // 📌 Récupérer les favoris de l'utilisateur connecté
-  const fetchFavoris = async (userId: string) => {
+  const fetchFavoris = async () => {
     try {
       setLoading(true);
       setError('');
-      console.log("🔍 Récupération des favoris pour l'utilisateur ID:", userId);
 
-      const response = await axios.get(`http://localhost:8080/api/favoris?id_user=${userId}`, {
+      const response = await axios.get(`http://localhost:8080/api/favoris`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('auth_token')}`
         }
@@ -87,7 +64,7 @@ export default function FavoritesScreen() {
 
   // 📌 Charger l'utilisateur et ses favoris dès l'ouverture
   useEffect(() => {
-    fetchUserId();
+    fetchFavoris();
   }, []);
 
   // Fonction de tri

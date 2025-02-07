@@ -20,7 +20,6 @@ const GenerateScreen = () => {
   const { addRecipe, recipes } = useRecipes(); // Récupérer les recettes du contexte
   const [error, setError] = useState("");
   const router = useRouter();
-  const { userId } = useAuth();
 
   const handleGenerateRecipes = async () => {
     if (!ingredients.trim()) {
@@ -36,12 +35,12 @@ const GenerateScreen = () => {
         "http://localhost:8080/chatgpt/recette",
         {
           ingredients: ingredients,
-          id_user: userId,
           nombre_recettes: 4,
         },
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`
           },
         }
       );
