@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
+import axios from 'axios';
 
 interface Recipe {
   id: string;
@@ -13,63 +14,81 @@ interface Recipe {
     time: string;
     description: string;
   }>;
-  ingredients: Array<{
-    ingredient: string;
-    quantity: string;
-    unit: string;
-  }>;
 }
 
-const FAVORITE_RECIPES: Recipe[] = [
-  {
-    id: "1",
-    recipeName: "Pâtes Carbonara",
-    totalTime: "30 min",
-    cookingTime: "15 min",
-    steps: [
-      { stepNumber: 1, time: "5 min", description: "Faire chauffer l'eau pour les pâtes" },
-      { stepNumber: 2, time: "10 min", description: "Cuire les lardons et préparer la sauce" },
-    ],
-    ingredients: [
-      { ingredient: "Pâtes", quantity: "300", unit: "g" },
-      { ingredient: "Lardons", quantity: "200", unit: "g" },
-    ],
-  },
-  {
-    id: "2",
-    recipeName: "Salade César",
-    totalTime: "20 min",
-    cookingTime: "0 min",
-    steps: [
-      { stepNumber: 1, time: "10 min", description: "Laver et préparer la laitue" },
-      { stepNumber: 2, time: "5 min", description: "Préparer la sauce et les croûtons" },
-    ],
-    ingredients: [
-      { ingredient: "Laitue", quantity: "1", unit: "unité" },
-      { ingredient: "Croûtons", quantity: "100", unit: "g" },
-    ],
-  },
-  {
-    id: "3",
-    recipeName: "Omelette Fromage",
-    totalTime: "10 min",
-    cookingTime: "5 min",
-    steps: [
-      { stepNumber: 1, time: "2 min", description: "Battre les œufs avec le fromage" },
-      { stepNumber: 2, time: "5 min", description: "Cuire l'omelette dans une poêle" },
-    ],
-    ingredients: [
-      { ingredient: "Œufs", quantity: "3", unit: "unité" },
-      { ingredient: "Fromage râpé", quantity: "50", unit: "g" },
-    ],
-  },
-];
-
+// 🔹 États globaux pour stocker `id_user` et les favoris
 export default function FavoritesScreen() {
+  const [userId, setUserId] = useState<string | null>(null);
   const [sorting, setSorting] = useState("name");
-  const [recipes, setRecipes] = useState<Recipe[]>(FAVORITE_RECIPES);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
+
+  // 📌 Récupérer `id_user` avant d'appeler `fetchFavoris()`
+  const fetchUserId = async () => {
+    try {
+      console.log("🔍 Récupération de l'ID utilisateur...");
+      const response = await axios.get('http://localhost:8080/api/user', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(response.data.token)}`
+        }
+      });
+
+      console.log("✅ Utilisateur récupéré :", response.data);
+      if (response.data.id) {
+        setUserId(response.data.id.toString());
+        fetchFavoris(response.data.id.toString()); // Appelle `fetchFavoris()` avec `id_user`
+      } else {
+        setError("Utilisateur non authentifié");
+      }
+    } catch (err) {
+      console.error("❌ Erreur lors de la récupération de l'utilisateur :", err);
+      setError("Impossible de récupérer l'utilisateur.");
+    }
+  };
+
+  // 📌 Récupérer les favoris de l'utilisateur connecté
+  const fetchFavoris = async (userId: string) => {
+    try {
+      setLoading(true);
+      setError('');
+      console.log("🔍 Récupération des favoris pour l'utilisateur ID:", userId);
+
+      const response = await axios.get(`http://localhost:8080/api/favoris?id_user=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+
+      console.log("✅ Favoris récupérés :", response.data);
+
+      if (response.data.message) {
+        setError(response.data.message);
+        setRecipes([]);
+      } else {
+        const favoris = response.data.map((fav: any) => ({
+          id: fav.id.toString(),
+          recipeName: fav.json?.titre || "Nom inconnu",
+          totalTime: fav.json?.temps_total ? `${fav.json.temps_total} min` : "N/A",
+          cookingTime: fav.json?.temps_cuisson ? `${fav.json.temps_cuisson} min` : "N/A",
+          steps: fav.json?.etapes || [],
+        }));
+
+        setRecipes(favoris);
+      }
+    } catch (err) {
+      console.error("❌ Erreur lors de la récupération des favoris :", err);
+      setError("Erreur lors de la récupération des favoris.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 📌 Charger l'utilisateur et ses favoris dès l'ouverture
+  useEffect(() => {
+    fetchUserId();
+  }, []);
 
   // Fonction de tri
   const sortRecipes = (criteria: string) => {
@@ -91,16 +110,14 @@ export default function FavoritesScreen() {
     }, 500);
   };
 
+  // 📌 Affichage des favoris
   const renderRecipeItem = ({ item }: { item: Recipe }) => (
     <TouchableOpacity 
       style={styles.recipeCard}
-      onPress={() => router.navigate(`/recipe-detail?recipe=${encodeURIComponent(JSON.stringify(item))}&origin=favorites`)}
+      onPress={() => router.push({ pathname: "/recipe-detail", params: { recipe: JSON.stringify(item), origin: "favorites" } })}
     >
       <Text style={styles.recipeTitle}>{item.recipeName}</Text>
       <Text style={styles.recipeTime}>⏱ {item.totalTime}</Text>
-      <Text style={styles.ingredients}>
-        {item.ingredients.map(ing => ing.ingredient).join(', ')}
-      </Text>
     </TouchableOpacity>
   );
 
@@ -120,6 +137,7 @@ export default function FavoritesScreen() {
       </Picker>
 
       {loading && <ActivityIndicator size="large" color="#FF6D6D" style={styles.loader} />}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <FlatList
         data={recipes}
@@ -153,6 +171,12 @@ const styles = StyleSheet.create({
   loader: {
     marginVertical: 20,
   },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginVertical: 10,
+    fontSize: 16,
+  },
   listContainer: {
     paddingBottom: 20,
   },
@@ -178,9 +202,5 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 8,
   },
-  ingredients: {
-    fontSize: 14,
-    color: '#888',
-    fontStyle: 'italic',
-  },
 });
+
