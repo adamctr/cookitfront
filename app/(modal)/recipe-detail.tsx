@@ -48,7 +48,7 @@ export default function RecipeDetailModal() {
       {/* Bouton de fermeture */}
       <View style={styles.modalHeader}>
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-          <Ionicons name="close" size={24} color="#666" />
+          <Ionicons name="close" size={24} color="#F56A00" />
         </TouchableOpacity>
         <View style={styles.handleIndicator} />
       </View>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 16,
-    color: '#666',
+    color: '#F56A009F',
     marginBottom: 15,
   },
   sectionTitle: {

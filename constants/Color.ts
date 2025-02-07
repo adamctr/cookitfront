@@ -1,6 +1,6 @@
 export default {
     // Couleurs primaires
-    primary: '#7364ff',
+    primary: '#F56A00',
     primaryLight: '#a396ff',
     primaryDark: '#4639cc',
   
