@@ -1,26 +1,35 @@
 // app/(auth)/register.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
-import { Link, useRouter } from 'expo-router';
-import { useAuth } from '@context/AuthProvider';
-import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '@constants/Color';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import axios from 'axios';
-
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { Link, useRouter } from "expo-router";
+import { useAuth } from "@context/AuthProvider";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "@constants/Color";
+import { SafeAreaView } from "react-native-safe-area-context";
+import axios from "axios";
 
 // Schéma de validation avec Zod
-const registerSchema = z.object({
-  email: z.string().email('Email invalide').min(1, 'Email requis'),
-  password: z.string().min(8, 'Minimum 8 caractères'),
-  confirmPassword: z.string().min(8, 'Minimum 8 caractères')
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"]
-});
+const registerSchema = z
+  .object({
+    email: z.string().email("Email invalide").min(1, "Email requis"),
+    password: z.string().min(8, "Minimum 8 caractères"),
+    confirmPassword: z.string().min(8, "Minimum 8 caractères"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -31,27 +40,31 @@ export default function RegisterScreen() {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [secureConfirmTextEntry, setSecureConfirmTextEntry] = useState(true);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema)
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
   });
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/(tabs)/generate');
+      router.replace("/(tabs)/generate");
     }
   }, [isAuthenticated, router]);
 
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8080/api/register', { 
+      const response = await axios.post("http://localhost:8080/api/register", {
         email: data.email,
-        password: data.password
+        password: data.password,
       });
-        // Ici vous ajouteriez l'appel à votre API d'inscription
-      await login(response.data.token); // Simulation de connexion automatique après inscription
+
+      await login(response.data.token);
     } catch (error) {
-      Alert.alert('Erreur', "Échec de l'inscription. Veuillez réessayer.");
+      Alert.alert("Erreur", "Échec de l'inscription. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
     }
@@ -59,8 +72,8 @@ export default function RegisterScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image 
-        source={require('@assets/images/logo.png')} 
+      <Image
+        source={require("@assets/images/logo.png")}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -68,7 +81,6 @@ export default function RegisterScreen() {
       <Text style={styles.title}>Créez votre compte</Text>
 
       <View style={styles.form}>
-       
         <Controller
           control={control}
           name="email"
@@ -110,7 +122,7 @@ export default function RegisterScreen() {
                 onPress={() => setSecureTextEntry(!secureTextEntry)}
               >
                 <Ionicons
-                  name={secureTextEntry ? 'eye-off' : 'eye'}
+                  name={secureTextEntry ? "eye-off" : "eye"}
                   size={20}
                   color={Colors.gray}
                 />
@@ -138,16 +150,20 @@ export default function RegisterScreen() {
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
-                onPress={() => setSecureConfirmTextEntry(!secureConfirmTextEntry)}
+                onPress={() =>
+                  setSecureConfirmTextEntry(!secureConfirmTextEntry)
+                }
               >
                 <Ionicons
-                  name={secureConfirmTextEntry ? 'eye-off' : 'eye'}
+                  name={secureConfirmTextEntry ? "eye-off" : "eye"}
                   size={20}
                   color={Colors.gray}
                 />
               </TouchableOpacity>
               {errors.confirmPassword && (
-                <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>
+                <Text style={styles.errorText}>
+                  {errors.confirmPassword.message}
+                </Text>
               )}
             </View>
           )}
@@ -191,10 +207,10 @@ export default function RegisterScreen() {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>En vous inscrivant, vous acceptez nos </Text>
-        <Text style={styles.footerLink}>
-          Conditions d'utilisation
+        <Text style={styles.footerText}>
+          En vous inscrivant, vous acceptez nos{" "}
         </Text>
+        <Text style={styles.footerLink}>Conditions d'utilisation</Text>
       </View>
     </SafeAreaView>
   );
@@ -205,100 +221,100 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.background,
   },
   logo: {
     width: 150,
     height: 150,
-    alignSelf: 'center',
-    marginBottom: 30
+    alignSelf: "center",
+    marginBottom: 30,
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: "600",
     color: Colors.text,
-    textAlign: 'center',
-    marginBottom: 30
+    textAlign: "center",
+    marginBottom: 30,
   },
   form: {
-    gap: 20
+    gap: 20,
   },
   inputContainer: {
-    gap: 5
+    gap: 5,
   },
   input: {
     backgroundColor: Colors.inputBackground,
     padding: 15,
     borderRadius: 10,
     fontSize: 16,
-    color: Colors.text
+    color: Colors.text,
   },
   errorText: {
     color: Colors.error,
     fontSize: 14,
-    marginLeft: 5
+    marginLeft: 5,
   },
   eyeIcon: {
-    position: 'absolute',
+    position: "absolute",
     right: 15,
-    top: 15
+    top: 15,
   },
   button: {
     backgroundColor: Colors.primary,
     padding: 18,
     borderRadius: 10,
-    alignItems: 'center'
+    alignItems: "center",
   },
   disabledButton: {
-    opacity: 0.7
+    opacity: 0.7,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 16
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
   },
   link: {
     color: Colors.primary,
-    textAlign: 'center',
-    fontSize: 14
+    textAlign: "center",
+    fontSize: 14,
   },
   separatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    marginVertical: 30
+    marginVertical: 30,
   },
   separatorLine: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.border
+    backgroundColor: Colors.border,
   },
   separatorText: {
     color: Colors.gray,
-    fontSize: 14
+    fontSize: 14,
   },
   socialButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 20,
   },
   socialButton: {
     borderWidth: 1,
     borderColor: Colors.border,
     padding: 15,
-    borderRadius: 10
+    borderRadius: 10,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 30,
-    flexWrap: 'wrap'
+    flexWrap: "wrap",
   },
   footerText: {
-    color: Colors.textSecondary
+    color: Colors.textSecondary,
   },
   footerLink: {
     color: Colors.primary,
-    fontWeight: '500'
-  }
+    fontWeight: "500",
+  },
 });
