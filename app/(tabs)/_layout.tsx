@@ -29,7 +29,7 @@ export default function TabsLayout() {
   return (
     <View style={{ flex: 1 }}>
       <Tabs screenOptions={{
-        tabBarActiveTintColor: '#e91e63',
+        tabBarActiveTintColor: '#F56A00',
       }}>
         <Tabs.Screen 
           name="generate" 
@@ -50,11 +50,11 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen 
-          name="favorites" 
+          name="historique" 
           options={{
-            title: 'Favoris',
+            title: 'Historique',
             tabBarIcon: ({ color }) => (
-              <Ionicons name="heart" size={24} color={color} />
+              <Ionicons name="hourglass" size={24} color={color} />
             ),
             headerRight: () => (
               <Ionicons 
@@ -81,8 +81,8 @@ export default function TabsLayout() {
             <Text style={styles.modalTitle}>Confirmation de déconnexion</Text>
             <Text style={styles.modalMessage}>Êtes-vous sûr de vouloir vous déconnecter ?</Text>
             <View style={styles.modalButtons}>
-              <Button title="Annuler" onPress={cancelLogout} />
-              <Button title="Confirmer" onPress={confirmLogout} />
+              <Button color="#F56A00" title="Annuler" onPress={cancelLogout} />
+              <Button color="#F56A00" title="Confirmer" onPress={confirmLogout} />
             </View>
           </View>
         </View>
@@ -124,4 +124,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
   },
+  Button: {
+    borderRadius: 8 , 
+    backgroundColor: '#F56A00'
+  }
 });

@@ -105,8 +105,9 @@ export default function FavoritesScreen() {
   );
 
   return (
+
     <View style={styles.container}>
-      <Text style={styles.title}>Vos recettes favorites ❤️</Text>
+      <Text style={styles.title}>Votre historique de recettes</Text>
 
       {/* Dropdown de tri */}
       <Picker
@@ -119,7 +120,7 @@ export default function FavoritesScreen() {
         <Picker.Item label="Trier par temps de cuisson" value="cookingTime" />
       </Picker>
 
-      {loading && <ActivityIndicator size="large" color="#FF6D6D" style={styles.loader} />}
+      {loading && <ActivityIndicator size="large" color="#F56A00" style={styles.loader} />}
 
       <FlatList
         data={recipes}

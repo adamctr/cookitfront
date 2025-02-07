@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     top: 15
   },
   button: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#F56A00',
     padding: 18,
     borderRadius: 10,
     alignItems: 'center'
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   link: {
-    color: Colors.primary,
+    color: '#F56A00',
     textAlign: 'center',
     fontSize: 14
   },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary
   },
   footerLink: {
-    color: Colors.primary,
+    color:'#F56A00',
     fontWeight: '500'
   }
 });

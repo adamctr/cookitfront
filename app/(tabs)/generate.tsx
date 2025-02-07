@@ -94,11 +94,11 @@ const GenerateScreen = () => {
         title="Générer des recettes"
         onPress={handleGenerateRecipes}
         disabled={loading}
-        color="#FF6D6D"
+        color="#F56A00"
         style={styles.button}
       />
 
-      {loading && <ActivityIndicator size="large" color="#FF6D6D" style={styles.loader} />}
+      {loading && <ActivityIndicator size="large" color="#F56A00" style={styles.loader} />}
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#FAFAFA',
+    background: '#FAFAFA',
   },
   input: {
     height: 50,
